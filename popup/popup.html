@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Email Alias Settings</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Configure base email plus-alias hotkey settings." />
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <h1>Email Alias Settings</h1>
+  <form id="aliasForm" novalidate>
+    <div class="field">
+      <label for="email">Base Email</label>
+      <input type="email" id="email" placeholder="you@example.com" autocomplete="email" required aria-describedby="emailHint emailError" />
+      <div class="hint" id="emailHint">Use your real inbox address.</div>
+      <div class="error-msg" id="emailError" data-for="email" role="alert">Enter a valid email.</div>
+    </div>
+
+    <div class="field">
+      <label for="alias">Alias Prefix</label>
+      <input type="text" id="alias" placeholder="test" required aria-describedby="aliasHint aliasError" />
+      <div class="hint" id="aliasHint">Result: local+prefix+number@domain</div>
+      <div class="error-msg" id="aliasError" data-for="alias" role="alert">Provide a prefix.</div>
+    </div>
+
+    <div class="field">
+      <label for="counter">Current Counter</label>
+      <input type="number" id="counter" min="1" step="1" placeholder="1" aria-describedby="counterHint" />
+      <div class="hint" id="counterHint">Starting increment value.</div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="actions">
+      <button type="button" class="secondary" id="reset">Reset</button>
+      <button type="submit" class="primary" id="save">Save</button>
+    </div>
+    <div class="actions actions-row2">
+      <button type="button" class="secondary" id="pasteCurrent" title="Paste current alias (same as Hotkey 1)">Paste Current</button>
+      <button type="button" class="primary" id="pasteNext" title="Increment then paste (same as Hotkey 2)">Paste Next</button>
+    </div>
+  </form>
+  <div id="status" aria-live="polite"></div>
+  <div id="previewBlock" class="preview-block" aria-live="polite"></div>
+  <div class="divider"></div>
+  <div class="small-note">
+    Shortcuts: Set in chrome://extensions/shortcuts.<br />
+    Hotkey 1: Pastes current email.<br />
+    Hotkey 2: Increments the current email then pastes.
+  </div>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
