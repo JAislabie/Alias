@@ -35,26 +35,13 @@ import { getSettings, saveSettings, incrementCounter, STORAGE_KEY } from './util
     console.log('[Email Alias Hotkeys]', message);
   }
 
-  async function copyTextViaPage(tabId, text) {
-    try {
-      await chrome.scripting.executeScript({
-        target: { tabId },
-        func: (t) => navigator.clipboard && navigator.clipboard.writeText(t).catch(() => {}),
-        args: [text]
-      });
-      notify('Alias copied to clipboard.');
-    } catch (e) {
-      console.warn('Clipboard page-context write failed:', e);
-    }
-  }
 
   async function performPaste(incrementFirst) {
     try {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
       if (!tab || !tab.id) { notify('No active tab.'); return; }
       if (isRestrictedUrl(tab.url)) {
-        notify('Restricted page; using clipboard fallback.');
-        await clipboardFlow(incrementFirst, tab.id);
+        notify('Cannot paste on restricted pages. Navigate to a standard http/https page.');
         return;
       }
 
@@ -76,50 +63,39 @@ import { getSettings, saveSettings, incrementCounter, STORAGE_KEY } from './util
       // Ensure script then send
       const injected = await ensureContentScript(tab.id);
       if (!injected) {
-        notify('Injection failed, copying to clipboard instead.');
-        await copyTextViaPage(tab.id, aliasEmail);
+        notify('Content script injection failed; unable to paste.');
         return;
       }
 
       chrome.tabs.sendMessage(tab.id, { type: 'PASTE_ALIAS', value: aliasEmail }, async () => {
         if (chrome.runtime.lastError) {
           console.warn('sendMessage failed after injection:', chrome.runtime.lastError.message);
-          notify('Paste failed; copied alias instead.');
-          await copyTextViaPage(tab.id, aliasEmail);
+          notify('Paste failed after injection.');
         }
       });
-    } catch (err) {
-      console.error('performPaste error:', err);
-      notify('Unexpected error; see console.');
-    }
-  }
+        } catch (err) {
+          console.error('performPaste error:', err);
+          notify('Unexpected error; see console.');
+        }
+      }
 
-  async function clipboardFlow(incrementFirst, tabId) {
-    let settings = await getSettings();
-    if (!settings.email || !settings.alias) { notify('Configure alias settings in popup.'); return; }
-    if (incrementFirst) settings = await incrementCounter();
-    const counter = parseInt(settings.counter, 10) || 1;
-    const aliasEmail = buildAliasEmail(settings.email.trim(), settings.alias.trim(), counter);
-    await copyTextViaPage(tabId, aliasEmail);
-  }
-
-  chrome.commands.onCommand.addListener(command => {
-    switch (command) {
-      case 'paste_alias_current':
-        performPaste(false);
-        break;
-      case 'paste_alias_next':
-        performPaste(true);
-        break;
-    }
-  });
-  // Messages from popup buttons
-  chrome.runtime.onMessage.addListener((msg) => {
-    if (!msg) return;
-    if (msg.type === 'CMD_PASTE_CURRENT') {
-      performPaste(false);
-    } else if (msg.type === 'CMD_PASTE_NEXT') {
-      performPaste(true);
-    }
-  });
-})();
+      chrome.commands.onCommand.addListener(command => {
+        switch (command) {
+          case 'paste_alias_current':
+            performPaste(false);
+            break;
+          case 'paste_alias_next':
+            performPaste(true);
+            break;
+        }
+      });
+      // Messages from popup buttons
+      chrome.runtime.onMessage.addListener((msg) => {
+        if (!msg) return;
+        if (msg.type === 'CMD_PASTE_CURRENT') {
+          performPaste(false);
+        } else if (msg.type === 'CMD_PASTE_NEXT') {
+          performPaste(true);
+        }
+      });
+    })();

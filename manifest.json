@@ -2,9 +2,8 @@
   "manifest_version": 3,
   "name": "Email Alias Hotkeys",
   "description": "Quickly paste plus-addressed email aliases with hotkeys (current or incremented).",
-  "version": "1.0.3",
-  "permissions": ["storage", "tabs", "scripting", "clipboardWrite"],
-  "host_permissions": ["<all_urls>"],
+  "version": "1.0.4",
+  "permissions": ["storage", "scripting", "activeTab"],
   "action": { "default_popup": "popup/popup.html" },
   "commands": {
     "paste_alias_current": { "suggested_key": { "default": "Alt+Shift+1" }, "description": "Paste current alias" },
@@ -15,12 +14,5 @@
     "48": "assets/icons/icon48.png",
     "16": "assets/icons/icon16.png"
   },
-  "background": { "service_worker": "background.js", "type": "module" },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["contentScript.js"],
-      "run_at": "document_idle"
-    }
-  ]
+  "background": { "service_worker": "background.js", "type": "module" }
 }

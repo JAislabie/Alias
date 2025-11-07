@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Privacy Policy – Email Alias Hotkeys</title>
+  <link rel="stylesheet" href="./styles.css">
+  <meta name="description" content="Privacy policy for Email Alias Hotkeys Chrome extension.">
+</head>
+<body>
+  <div class="container">
+    <h1>Privacy Policy</h1>
+    <p class="small">Last updated: 2025-11-07</p>
+    <div class="card">
+      <h2>Overview</h2>
+      <p>Email Alias Hotkeys operates entirely on the user’s device. It generates and pastes plus-alias variants of an email address you configure.</p>
+      <h2>Data Stored</h2>
+      <p>The extension stores the following via <code>chrome.storage.sync</code>:</p>
+      <ul>
+        <li>Base email address</li>
+        <li>Alias prefix</li>
+        <li>Counter value</li>
+      </ul>
+      <p>This data is local to the extension and may sync through Chrome. It is never transmitted to external servers.</p>
+      <h2>Not Collected</h2>
+      <ul>
+        <li>Browsing history</li>
+        <li>Page/content data</li>
+        <li>Form contents (other than inserting the generated alias)</li>
+        <li>Analytics, tracking, advertising identifiers</li>
+      </ul>
+      <h2>Permissions</h2>
+      <ul>
+        <li><strong>storage</strong>: Persist your alias settings.</li>
+        <li><strong>scripting</strong>: Inject a tiny script on-demand to paste the alias into the focused field.</li>
+        <li><strong>activeTab</strong>: Restrict actions to the tab you explicitly invoke via popup or shortcut.</li>
+      </ul>
+      <p>No host permissions; no persistent content scripts.</p>
+      <h2>Third‑Party Services</h2>
+      <p>None. No external requests.</p>
+      <h2>Clipboard</h2>
+      <p>The extension does not use clipboard permissions.</p>
+      <h2>Removal</h2>
+      <p>Clear fields and save, or uninstall the extension to remove stored data.</p>
+      <h2>Changes</h2>
+      <p>Updates to this policy will change the date above.</p>
+      <h2>Contact</h2>
+      <p>Open an issue on <a href="https://github.com/JAislabie/Alias">GitHub</a> for questions.</p>
+    </div>
+    <p class="small"><a href="./index.html">← Back to Home</a></p>
+    <footer class="small"><p>© 2025. Source: <a href="https://github.com/JAislabie/Alias">GitHub</a></p></footer>
+  </div>
+</body>
+</html>
