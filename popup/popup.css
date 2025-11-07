@@ -72,6 +72,35 @@ input.error {
 }
 @media (prefers-color-scheme: dark) {
   input.error { background: #402222; }
+  /* In dark mode, keep focused input background dark so light text remains readable */
+  input:focus { background: var(--bg-alt); }
+  /* Preserve red tint when an errored input is focused */
+  input.error:focus { background: #402222; }
+  /* Render native form controls (incl. number spinners) in dark theme */
+  input, select, textarea, button { color-scheme: dark; }
+  /* Fallback for browsers/extensions that ignore color-scheme on spinners */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    /* Invert default light arrows to suit dark background */
+    filter: invert(0.9);
+    opacity: .9;
+  }
+}
+/* Match spinner button background to the input background (Chrome/WebKit) */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  background: var(--bg-alt);
+  margin: 0;
+}
+input[type="number"].error::-webkit-inner-spin-button,
+input[type="number"].error::-webkit-outer-spin-button {
+  background: #fff5f5;
+}
+@media (prefers-color-scheme: dark) {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button { background: var(--bg-alt); filter: none; opacity: .8; }
+  input[type="number"].error::-webkit-inner-spin-button,
+  input[type="number"].error::-webkit-outer-spin-button { background: #402222; }
 }
 .hint {
   font-size: 11px;

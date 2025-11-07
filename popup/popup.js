@@ -23,10 +23,25 @@ import { STORAGE_KEY } from '../utils/storage.js';
     function setDirty(v){ dirty=v; if(v) showStatus('Unsaved changes…'); else if(!els.status.classList.contains('error')) showStatus(''); }
     function fieldError(input, show){ if(!input) return; const msg=document.querySelector('.error-msg[data-for="'+input.id+'"]'); if(show){ input.classList.add('error'); msg&&msg.classList.add('active'); } else { input.classList.remove('error'); msg&&msg.classList.remove('active'); } }
 
-    function validate(){ let ok=true; if(!els.email.value || !els.email.checkValidity()){ fieldError(els.email,true); ok=false; } else fieldError(els.email,false);
-      const cleaned = sanitizeAlias(els.alias.value); if(!cleaned){ fieldError(els.alias,true); ok=false; } else fieldError(els.alias,false);
-      if(els.counter.value && (+els.counter.value<1)){ els.counter.classList.add('error'); ok=false; } else els.counter.classList.remove('error');
-      els.save.disabled = !ok; return ok; }
+    // Validate fields. When show=false, compute validity and disable Save without showing red errors (used on initial load)
+    function validate(show=true){
+      let ok = true;
+      const emailValid = !!els.email.value && els.email.checkValidity();
+      const aliasClean = sanitizeAlias(els.alias.value);
+      const counterValid = !(els.counter.value && (+els.counter.value < 1));
+
+      if(show){
+        if(!emailValid){ fieldError(els.email, true); ok = false; } else { fieldError(els.email, false); }
+        if(!aliasClean){ fieldError(els.alias, true); ok = false; } else { fieldError(els.alias, false); }
+        if(!counterValid){ els.counter.classList.add('error'); ok = false; } else { els.counter.classList.remove('error'); }
+      } else {
+        // Silent mode: don't show errors yet, but still compute ok
+        ok = emailValid && !!aliasClean && counterValid;
+      }
+
+      els.save.disabled = !ok;
+      return ok;
+    }
 
     function updatePreview(){ if(!els.previewBlock) return; const email=els.email.value.trim(); const alias=sanitizeAlias(els.alias.value.trim()); const counter=(els.counter.value||'1').trim();
       const current = buildAliasEmail(email, alias, counter); const next = buildNextAliasEmail({ email, alias, counter });
@@ -44,7 +59,7 @@ import { STORAGE_KEY } from '../utils/storage.js';
 
     function load(){ chrome.storage.sync.get(STORAGE_KEY, data=>{ if(chrome.runtime.lastError){ console.warn('Load error', chrome.runtime.lastError); showStatus('Load failed.','error'); return; }
       const s=data[STORAGE_KEY]||{}; settings.email=s.email||''; settings.alias=s.alias||''; settings.counter=s.counter||'1';
-      els.email.value=settings.email; els.alias.value=settings.alias; els.counter.value=settings.counter; setDirty(false); validate(); updatePreview(); autoFocusFirstEmpty(); }); }
+      els.email.value=settings.email; els.alias.value=settings.alias; els.counter.value=settings.counter; setDirty(false); validate(false); updatePreview(); autoFocusFirstEmpty(); }); }
 
     // PASTE handlers
     async function triggerPaste(increment){ try { await chrome.runtime.sendMessage({ type: increment?'CMD_PASTE_NEXT':'CMD_PASTE_CURRENT' }); showStatus(increment?'Incrementing & pasting…':'Pasting…'); } catch(e){ console.warn('Paste message failed', e); showStatus('Paste message failed','error'); } }
